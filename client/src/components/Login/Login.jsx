@@ -11,6 +11,8 @@ const Login = () => {
     email: "",
     password: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -18,12 +20,25 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
 
-    const { data } = await axios.post(`/api/user/login`, formData);
-    if (data) {
-      console.log(data);
-      dispatch(setAuthUser(data?.user));
-      navigate("/dashboard");
+    try {
+      const { data } = await axios.post(`/api/user/login`, formData);
+      if (data) {
+        dispatch(setAuthUser(data?.user));
+
+        // Check the user's role and navigate accordingly
+        if (data?.user?.role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/dashboard");
+        }
+      }
+    } catch (err) {
+      setError("Invalid email or password. Please try again.");
+    } finally {
+      setLoading(false);
     }
 
     setFormData({
@@ -52,6 +67,7 @@ const Login = () => {
             value={formData.email}
             onChange={handleChange}
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            required
           />
         </div>
         <div className="mb-6">
@@ -68,14 +84,19 @@ const Login = () => {
             value={formData.password}
             onChange={handleChange}
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            required
           />
         </div>
+
+        {error && <p className="text-red-500 text-xs italic mb-4">{error}</p>}
+
         <div className="flex items-center justify-center">
           <button
             type="submit"
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            disabled={loading}
           >
-            Log In
+            {loading ? "Logging in..." : "Log In"}
           </button>
         </div>
       </form>

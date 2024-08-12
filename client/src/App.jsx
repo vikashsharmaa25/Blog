@@ -38,10 +38,7 @@ function App() {
               <AdminDashboard />
             </AdminRoute>
           }
-        >
-          <Route path="add-blog" element={<AddBlog />} />
-          <Route path="add-blog/:id" element={<UpdateBlog />} />
-        </Route>
+        ></Route>
       </Routes>
     </div>
   );

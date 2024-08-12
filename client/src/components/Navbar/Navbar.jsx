@@ -8,6 +8,7 @@ import axios from "axios";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const user = useSelector((state) => state.auth.user);
+  console.log("user", user?.role);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -50,13 +51,23 @@ const Navbar = () => {
           </NavLink>
           {user ? (
             <>
-              <NavLink
-                to="/dashboard"
-                style={navLinkStyles}
-                className="text-white hover:text-gray-300"
-              >
-                Dashboard
-              </NavLink>
+              {user?.role === "admin" ? (
+                <NavLink
+                  to="/admin"
+                  style={navLinkStyles}
+                  className="text-white hover:text-gray-300"
+                >
+                  Admin
+                </NavLink>
+              ) : (
+                <NavLink
+                  to="/dashboard"
+                  style={navLinkStyles}
+                  className="text-white hover:text-gray-300"
+                >
+                  Dashboard
+                </NavLink>
+              )}
               <button
                 onClick={handleLogout}
                 className="text-white hover:text-gray-300"
@@ -116,14 +127,18 @@ const Navbar = () => {
             </NavLink>
             {user ? (
               <>
-                <NavLink
-                  to="/dashboard"
-                  style={navLinkStyles}
-                  className="text-white hover:text-gray-300"
-                  onClick={toggleNavbar}
-                >
-                  Dashboard
-                </NavLink>
+                {user?.role === "admin" ? (
+                  "f"
+                ) : (
+                  <NavLink
+                    to="/dashboard"
+                    style={navLinkStyles}
+                    className="text-white hover:text-gray-300"
+                    onClick={toggleNavbar}
+                  >
+                    Dashboard
+                  </NavLink>
+                )}
                 <button
                   onClick={() => {
                     handleLogout();
@@ -143,7 +158,7 @@ const Navbar = () => {
                   to="/login"
                   style={navLinkStyles}
                   className="text-white hover:text-gray-300"
-                  onClick={toggleNavbar} // Close menu on navigation
+                  onClick={toggleNavbar}
                 >
                   Login
                 </NavLink>
@@ -151,7 +166,7 @@ const Navbar = () => {
                   to="/register"
                   style={navLinkStyles}
                   className="text-white hover:text-gray-300"
-                  onClick={toggleNavbar} // Close menu on navigation
+                  onClick={toggleNavbar}
                 >
                   Register
                 </NavLink>
