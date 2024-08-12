@@ -11,7 +11,7 @@ const blogSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-  
+
     coverImage: {
       type: String,
       default: "",
@@ -37,6 +37,11 @@ const blogSchema = new mongoose.Schema(
         },
       },
     ],
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
+    },
   },
   { timestamps: true }
 );

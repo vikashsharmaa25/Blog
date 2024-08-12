@@ -1,13 +1,25 @@
 import Blog from "../models/blog.model.js";
 import cloudinary from "../utils/cloudinary.js";
 import getUserDataUri from "../utils/dataUri.js";
+import Category from "../models/category.model.js";
 
 // Create a new blog (Admin only)
 export const createBlog = async (req, res) => {
   try {
-    const { title, content } = req.body;
+    const { title, content, category } = req.body;
 
-    // Handle image upload if a file is provided
+    if (!title || !content || !category) {
+      return res.status(404).json({
+        status: false,
+        message: "all are required",
+      });
+    }
+
+    const categoryExists = await Category.findById(category);
+    if (!categoryExists) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
     let coverImage = "";
     if (req.file) {
       const fileUri = getUserDataUri(req.file);
@@ -19,6 +31,7 @@ export const createBlog = async (req, res) => {
       title,
       content,
       coverImage,
+      category,
     });
 
     await blog.save();
@@ -31,7 +44,7 @@ export const createBlog = async (req, res) => {
 // Get all blogs
 export const getBlogs = async (req, res) => {
   try {
-    const blogs = await Blog.find();
+    const blogs = await Blog.find().populate("category", "name");
     res.status(200).json(blogs);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -42,7 +55,7 @@ export const getBlogs = async (req, res) => {
 export const getBlogById = async (req, res) => {
   try {
     const { id } = req.params;
-    const blog = await Blog.findById(id);
+    const blog = await Blog.findById(id).populate("category", "name");
 
     if (!blog) {
       return res.status(404).json({ message: "Blog not found" });
@@ -58,7 +71,12 @@ export const getBlogById = async (req, res) => {
 export const updateBlog = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, content } = req.body;
+    const { title, content, category } = req.body;
+
+    const categoryExists = await Category.findById(category);
+    if (!categoryExists) {
+      return res.status(404).json({ message: "Category not found" });
+    }
 
     let coverImage = req.body.coverImage;
     if (req.file) {
@@ -69,7 +87,7 @@ export const updateBlog = async (req, res) => {
 
     const blog = await Blog.findByIdAndUpdate(
       id,
-      { title, content, coverImage },
+      { title, content, coverImage, category },
       { new: true }
     );
 

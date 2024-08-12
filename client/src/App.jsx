@@ -13,7 +13,7 @@ import BlogById from "./components/Blogs/BlogById";
 
 function App() {
   return (
-    <div className="">
+    <div className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />

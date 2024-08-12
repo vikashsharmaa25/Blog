@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import { connection } from "./configs/database.js";
 import router from "./routes/user.route.js";
 import blogRouter from "./routes/blog.route.js";
+import categoryRouter from "./routes/category.route.js";
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ const corsOption = {
 app.use(cors(corsOption));
 app.use("/api/user", router);
 app.use("/api/blog", blogRouter);
+app.use("/api/category", categoryRouter);
 
 // database connection
 connection();
