@@ -6,6 +6,11 @@ import { connection } from "./configs/database.js";
 import router from "./routes/user.route.js";
 import blogRouter from "./routes/blog.route.js";
 import categoryRouter from "./routes/category.route.js";
+import path from "path";
+const PORT = process.env.PORT || 4001;
+
+const __dirname = path.resolve();
+console.log(__dirname);
 
 dotenv.config();
 
@@ -25,7 +30,11 @@ app.use("/api/category", categoryRouter);
 // database connection
 connection();
 
-const PORT = process.env.PORT || 4001;
+app.use(express.static(path.join(__dirname, "/client/dist")));
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "client", "dist", "index.html"));
+});
+
 app.listen(PORT, () => {
   console.log(`server is running port: ${PORT}`);
 });
