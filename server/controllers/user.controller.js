@@ -84,6 +84,7 @@ export const loginUser = async (req, res) => {
           bio: user.bio,
           gender: user.gender,
           role: user.role,
+          likes: user.likedBlogs,
         },
       });
   } catch (error) {

@@ -199,14 +199,6 @@ function AdminDashboard() {
           <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
             Admin Dashboard
           </h1>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="flex items-center px-4 py-2 text-white transition-all duration-200 rounded-lg shadow-md bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-          >
-            <FiLogOut className="mr-2" />
-            Logout
-          </motion.button>
         </motion.div>
 
         {/* Dashboard Content */}
