@@ -4,8 +4,6 @@ import Home from "./components/Home/Home";
 import Login from "./components/Login/Login";
 import Resgiter from "./components/Register/Resgiter";
 import Navbar from "./components/Navbar/Navbar";
-import AddBlog from "./components/Admin/AddBlog";
-import UpdateBlog from "./components/Admin/UpdateBlog";
 import { AdminRoute, PrivateRoute } from "./components/routes/PrivateRoute";
 import Dashboard from "./components/User/Dashboard";
 import AdminDashboard from "./components/Admin/AdminDashboard";

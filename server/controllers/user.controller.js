@@ -82,7 +82,7 @@ export const loginUser = async (req, res) => {
           email: user.email,
           profilePicture: user.profilePicture,
           bio: user.bio,
-          gernder: user.gender,
+          gender: user.gender,
           role: user.role,
         },
       });
@@ -124,30 +124,20 @@ export const getProfile = async (req, res) => {
 
 export const editProfile = async (req, res) => {
   try {
-    // Ye id aapka authenticated user ka hai
-    const userId = req.id;
+    const userId = req.userId;
 
-    // Request body se bio aur gender ko nikal rahe hain
     const { bio, gender } = req.body;
-
-    // Request se profilePicture bhi nikal rahe hain
     const profilePicture = req.file;
 
     let cloudResponse;
 
-    // Agar profile picture file milti hai toh usko Cloudinary pe upload karein
     if (profilePicture) {
-      // Get the Data URI of the profile picture
       const fileUri = getUserDataUri(req.file);
-
-      // Cloudinary pe upload kare aur response ko cloudResponse me store kare
       cloudResponse = await cloudinary.uploader.upload(fileUri);
     }
 
-    // `userId` ko `findById` method me pass karein bina kisi extra object ke
     const user = await User.findById(userId).select("-password");
 
-    // Agar user nahi milta toh error response de
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -155,12 +145,10 @@ export const editProfile = async (req, res) => {
       });
     }
 
-    // Update the user's profile details
     if (bio) user.bio = bio;
     if (gender) user.gender = gender;
     if (profilePicture) user.profilePicture = cloudResponse.secure_url;
 
-    // User ko save karne ke baad success response bheje
     await user.save();
 
     return res.status(200).json({
@@ -169,7 +157,7 @@ export const editProfile = async (req, res) => {
       user,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Profile update error:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 };

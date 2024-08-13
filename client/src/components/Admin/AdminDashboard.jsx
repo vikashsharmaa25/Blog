@@ -8,16 +8,23 @@ import {
   FiUsers,
   FiSettings,
   FiLogOut,
+  FiChevronDown,
+  FiChevronRight,
 } from "react-icons/fi";
+import { BiCategory } from "react-icons/bi";
 import AddBlog from "./AddBlog";
 import ManageUsers from "./ManageUsers";
 import Settings from "./Settings";
 import AllBlog from "./AllBlog";
+import AddCategory from "./AddCategory";
+import AllCategory from "./AllCategory";
 
 function AdminDashboard() {
   const [activeMenu, setActiveMenu] = useState("allBlog");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [editBlogId, setEditBlogId] = useState(null);
+  const [isBlogSubmenuOpen, setIsBlogSubmenuOpen] = useState(false);
+  const [isCategorySubmenuOpen, setIsCategorySubmenuOpen] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -28,12 +35,24 @@ function AdminDashboard() {
     setEditBlogId(id);
   };
 
+  const toggleSubmenu = (submenu) => {
+    if (submenu === "blog") {
+      setIsBlogSubmenuOpen(!isBlogSubmenuOpen);
+    } else if (submenu === "category") {
+      setIsCategorySubmenuOpen(!isCategorySubmenuOpen);
+    }
+  };
+
   const renderContent = () => {
     switch (activeMenu) {
       case "allBlog":
         return <AllBlog onEdit={handleMenuClick} />;
       case "addBlog":
         return <AddBlog blogId={editBlogId} />;
+      case "allCategory":
+        return <AllCategory />;
+      case "addCategory":
+        return <AddCategory />;
       case "manageUsers":
         return <ManageUsers />;
       case "settings":
@@ -44,8 +63,24 @@ function AdminDashboard() {
   };
 
   const menuItems = [
-    { name: "allBlog", icon: FiHome, label: "All Blogs" },
-    { name: "addBlog", icon: FiPlus, label: "Add Blog" },
+    {
+      name: "blog",
+      icon: FiHome,
+      label: "Blog",
+      submenu: [
+        { name: "allBlog", label: "All Blogs" },
+        { name: "addBlog", label: "Add Blog" },
+      ],
+    },
+    {
+      name: "category",
+      icon: BiCategory,
+      label: "Category",
+      submenu: [
+        { name: "allCategory", label: "All Categories" },
+        { name: "addCategory", label: "Add Category" },
+      ],
+    },
     { name: "manageUsers", icon: FiUsers, label: "Manage Users" },
     { name: "settings", icon: FiSettings, label: "Settings" },
   ];
@@ -56,14 +91,14 @@ function AdminDashboard() {
       <AnimatePresence>
         {isSidebarOpen && (
           <motion.div
-            className="bg-white bg-opacity-80 backdrop-filter backdrop-blur-lg w-64 shadow-lg"
+            className="w-64 bg-white shadow-lg bg-opacity-80 backdrop-filter backdrop-blur-lg"
             initial={{ x: -250 }}
             animate={{ x: 0 }}
             exit={{ x: -250 }}
             transition={{ duration: 0.3 }}
           >
             <div className="p-6">
-              <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-8">
+              <h1 className="mb-8 text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
                 Admin Panel
               </h1>
               <nav>
@@ -75,16 +110,68 @@ function AdminDashboard() {
                       whileTap={{ scale: 0.95 }}
                     >
                       <button
-                        className={`w-full text-left py-3 px-4 rounded-lg transition-all duration-200 flex items-center ${
+                        className={`w-full text-left py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-between ${
                           activeMenu === item.name
                             ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white"
                             : "hover:bg-gray-100"
                         }`}
-                        onClick={() => handleMenuClick(item.name)}
+                        onClick={() =>
+                          item.submenu
+                            ? toggleSubmenu(item.name)
+                            : handleMenuClick(item.name)
+                        }
                       >
-                        <item.icon className="mr-3" />
-                        {item.label}
+                        <div className="flex items-center">
+                          <item.icon className="mr-3" />
+                          {item.label}
+                        </div>
+                        {item.submenu && (
+                          <span>
+                            {item.name === "blog" && isBlogSubmenuOpen ? (
+                              <FiChevronDown />
+                            ) : item.name === "blog" ? (
+                              <FiChevronRight />
+                            ) : item.name === "category" &&
+                              isCategorySubmenuOpen ? (
+                              <FiChevronDown />
+                            ) : (
+                              <FiChevronRight />
+                            )}
+                          </span>
+                        )}
                       </button>
+                      {item.submenu && (
+                        <AnimatePresence>
+                          {(item.name === "blog" && isBlogSubmenuOpen) ||
+                          (item.name === "category" &&
+                            isCategorySubmenuOpen) ? (
+                            <motion.ul
+                              className="pl-6 mt-2 space-y-2"
+                              initial={{ height: 0 }}
+                              animate={{ height: "auto" }}
+                              exit={{ height: 0 }}
+                              transition={{ duration: 0.3 }}
+                            >
+                              {item.submenu.map((subitem) => (
+                                <li key={subitem.name}>
+                                  <button
+                                    className={`w-full text-left py-2 px-4 rounded-lg transition-all duration-200 flex items-center ${
+                                      activeMenu === subitem.name
+                                        ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white"
+                                        : "hover:bg-gray-100"
+                                    }`}
+                                    onClick={() =>
+                                      handleMenuClick(subitem.name)
+                                    }
+                                  >
+                                    {subitem.label}
+                                  </button>
+                                </li>
+                              ))}
+                            </motion.ul>
+                          ) : null}
+                        </AnimatePresence>
+                      )}
                     </motion.li>
                   ))}
                 </ul>
@@ -95,17 +182,17 @@ function AdminDashboard() {
       </AnimatePresence>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex flex-col flex-1">
         {/* Header */}
         <motion.div
-          className="bg-white bg-opacity-80 backdrop-filter backdrop-blur-lg p-4 shadow-md flex justify-between items-center"
+          className="flex items-center justify-between p-4 bg-white shadow-md bg-opacity-80 backdrop-filter backdrop-blur-lg"
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
           <button
             onClick={toggleSidebar}
-            className="text-2xl text-gray-600 hover:text-gray-800 transition-colors duration-200"
+            className="text-2xl text-gray-600 transition-colors duration-200 hover:text-gray-800"
           >
             {isSidebarOpen ? <FiX /> : <FiMenu />}
           </button>
@@ -115,7 +202,7 @@ function AdminDashboard() {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg shadow-md hover:from-purple-600 hover:to-pink-600 transition-all duration-200 flex items-center"
+            className="flex items-center px-4 py-2 text-white transition-all duration-200 rounded-lg shadow-md bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
           >
             <FiLogOut className="mr-2" />
             Logout

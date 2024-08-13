@@ -55,7 +55,20 @@ export const getBlogs = async (req, res) => {
 export const getBlogById = async (req, res) => {
   try {
     const { id } = req.params;
-    const blog = await Blog.findById(id).populate("category", "name");
+
+    const blog = await Blog.findById(id)
+      .populate("category", "name")
+      .populate({
+        path: "comments",
+        populate: {
+          path: "user",
+          select: "username profilePicture",
+        },
+      })
+      .populate({
+        path: "likes",
+        select: "username profilePicture",
+      });
 
     if (!blog) {
       return res.status(404).json({ message: "Blog not found" });

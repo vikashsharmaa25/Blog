@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ImSpinner9 } from "react-icons/im";
 import { MdDelete, MdOutlineEdit } from "react-icons/md";
+import { message } from "antd";
 
 function AllBlog({ onEdit }) {
   const [blogs, setBlogs] = useState([]);
@@ -39,6 +40,7 @@ function AllBlog({ onEdit }) {
     try {
       await axios.delete(`/api/blog/blogs/${id}`);
       setBlogs(blogs.filter((blog) => blog._id !== id));
+      message.success("blog deleted successfully");
     } catch (error) {
       if (error.response) {
         console.error("Error Deleting Blog:", error.response.data);
@@ -47,38 +49,38 @@ function AllBlog({ onEdit }) {
   };
 
   const editHandler = (id) => {
-    onEdit("addBlog", id); // Pass the ID to the onEdit function
+    onEdit("addBlog", id);
   };
 
   return (
     <>
       {isLoading ? (
         <div className="w-full flex justify-center items-center h-[80vh]">
-          <ImSpinner9 className="animate-spin text-4xl" />
+          <ImSpinner9 className="text-4xl animate-spin" />
         </div>
       ) : (
         <>
           <div className="p-6 bg-white rounded-lg shadow-lg">
-            <h1 className="text-2xl font-semibold mb-4">All Blogs</h1>
+            <h1 className="mb-4 text-2xl font-semibold">All Blogs</h1>
             <div className="overflow-x-auto">
               <table className="min-w-full bg-white">
                 <thead>
                   <tr>
-                    <th className="py-2 px-4 border-b-2 border-gray-200 text-start">
+                    <th className="px-4 py-2 border-b-2 border-gray-200 text-start">
                       Cover Image
                     </th>
-                    <th className="py-2 px-4 border-b-2 border-gray-200 text-start">
+                    <th className="px-4 py-2 border-b-2 border-gray-200 text-start">
                       Title
                     </th>
-                    <th className="py-2 px-4 border-b-2 border-gray-200 text-start">
+                    <th className="px-4 py-2 border-b-2 border-gray-200 text-start">
                       Content
                     </th>
 
-                    <th className="py-2 px-4 border-b-2 border-gray-200 text-start">
+                    <th className="px-4 py-2 border-b-2 border-gray-200 text-start">
                       Created At
                     </th>
 
-                    <th className="py-2 px-4 border-b-2 border-gray-200 text-start">
+                    <th className="px-4 py-2 border-b-2 border-gray-200 text-start">
                       Action
                     </th>
                   </tr>
@@ -86,7 +88,7 @@ function AllBlog({ onEdit }) {
                 <tbody>
                   {currentBlogs.map((blog) => (
                     <tr key={blog._id}>
-                      <td className="py-2 px-4 border-b border-gray-200">
+                      <td className="px-4 py-2 border-b border-gray-200">
                         <img
                           src={blog.coverImage}
                           alt={blog.title}
@@ -98,19 +100,19 @@ function AllBlog({ onEdit }) {
                           className="rounded-full"
                         />
                       </td>
-                      <td className="py-2 px-4 border-b border-gray-200">
+                      <td className="px-4 py-2 border-b border-gray-200">
                         {blog.title}
                       </td>
-                      <td className="py-2 px-4 border-b border-gray-200">
+                      <td className="px-4 py-2 border-b border-gray-200">
                         {blog.content.length > 50
                           ? `${blog.content.substring(0, 50)}...`
                           : blog.content}
                       </td>
 
-                      <td className="py-2 px-4 border-b border-gray-200">
+                      <td className="px-4 py-2 border-b border-gray-200">
                         {new Date(blog.createdAt).toLocaleDateString()}
                       </td>
-                      <td className="py-2 px-4 border-b border-gray-200">
+                      <td className="px-4 py-2 border-b border-gray-200">
                         <div className="flex items-center gap-3 text-xl">
                           <MdOutlineEdit
                             onClick={(e) => editHandler(blog._id)}

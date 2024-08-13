@@ -24,12 +24,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    
+
     bio: {
       type: String,
       default: "",
     },
-    
+
     gender: {
       type: String,
       enum: ["male", "female"],
@@ -40,13 +40,6 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "admin"],
       default: "user",
     },
-
-    bookmarks: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Blog",
-      },
-    ],
   },
   { timestamps: true }
 );

@@ -5,9 +5,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaHeart, FaComment, FaClock, FaSearch, FaUser } from "react-icons/fa";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import { ImSpinner9 } from "react-icons/im";
 
 function AllBlog() {
   const [blogs, setBlogs] = useState([]);
+  console.log("blogs", blogs);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -16,10 +18,10 @@ function AllBlog() {
     const fetchBlogs = async () => {
       try {
         const response = await axios.get("/api/blog/blogs");
-        setBlogs(response?.data);
-        setLoading(false);
+        setBlogs(response?.data || []);
       } catch (err) {
         setError("Failed to fetch blogs. Please try again later.");
+      } finally {
         setLoading(false);
       }
     };
@@ -28,7 +30,7 @@ function AllBlog() {
   }, []);
 
   const filteredBlogs = blogs.filter((blog) =>
-    blog.title.toLowerCase().includes(searchTerm.toLowerCase())
+    blog.title?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const breakpointColumnsObj = {
@@ -42,16 +44,16 @@ function AllBlog() {
   if (error) return <ErrorMessage message={error} />;
 
   return (
-    <div className="min-h-screen">
-      <div className="container mx-auto px-4 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black">
+      <div className="container px-4 py-12 mx-auto">
         <motion.h1
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-5xl font-extrabold mb-12 text-center text-white"
+          className="mb-12 text-5xl font-extrabold text-center text-white"
         >
           Explore Our{" "}
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-pink-500">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-pink-500">
             Blog Collection
           </span>
         </motion.h1>
@@ -67,9 +69,9 @@ function AllBlog() {
               placeholder="Search blogs..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 rounded-full bg-white bg-opacity-20 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-white"
+              className="w-full px-4 py-2 text-white placeholder-gray-300 bg-white rounded-full bg-opacity-20 focus:outline-none focus:ring-2 focus:ring-pink-500"
             />
-            <FaSearch className="absolute right-3 top-3 text-white" />
+            <FaSearch className="absolute text-pink-500 right-3 top-3" />
           </div>
         </motion.div>
         <AnimatePresence>
@@ -78,17 +80,28 @@ function AllBlog() {
             className="flex w-auto -ml-4"
             columnClassName="pl-4 bg-clip-padding"
           >
-            {filteredBlogs.map((blog) => (
+            {filteredBlogs.length > 0 ? (
+              filteredBlogs.map((blog) => (
+                <motion.div
+                  key={blog._id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <BlogCard blog={blog} />
+                </motion.div>
+              ))
+            ) : (
               <motion.div
-                key={blog._id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.3 }}
+                className="text-center text-gray-400"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
               >
-                <BlogCard blog={blog} />
+                No blogs found matching your search.
               </motion.div>
-            ))}
+            )}
           </Masonry>
         </AnimatePresence>
       </div>
@@ -98,63 +111,89 @@ function AllBlog() {
 
 function BlogCard({ blog }) {
   const navigate = useNavigate();
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(blog?.likes?.length || 0);
+
   const clickHandler = (id) => {
     navigate(`/blog/${id}`);
   };
 
+  const handleLike = async () => {
+    try {
+      const response = await axios.post("/api/blog/like", { blogId: blog._id });
+      if (response.data.success) {
+        setIsLiked((prevIsLiked) => {
+          const newLikeState = !prevIsLiked;
+          setLikeCount((prevLikeCount) =>
+            newLikeState ? prevLikeCount + 1 : prevLikeCount - 1
+          );
+          return newLikeState;
+        });
+      }
+    } catch (error) {
+      console.error("Error liking the blog:", error);
+    }
+  };
+
   return (
     <motion.div
-      className="mb-8 bg-gray-900 backdrop-filter backdrop-blur-lg bg-opacity-30 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300"
+      className="mb-8 overflow-hidden transition-all duration-300 bg-gray-800 shadow-lg backdrop-filter backdrop-blur-lg bg-opacity-30 rounded-xl hover:shadow-2xl"
       whileHover={{ y: -5, scale: 1.02 }}
     >
       <div className="relative">
         <img
-          src={blog.coverImage}
-          alt={blog.title}
-          className="w-full h-52 object-cover"
+          src={blog.coverImage || "/default-image.jpg"}
+          alt={blog.title || "Untitled"}
+          className="object-cover w-full h-64"
+          onError={(e) => (e.target.src = "/default-image.jpg")}
         />
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black to-transparent opacity-60"></div>
         <div className="absolute bottom-4 left-4 right-4">
           <h2
             onClick={() => clickHandler(blog?._id)}
-            className="text-2xl font-bold mb-2 text-white cursor-pointer hover:text-yellow-400 transition-colors duration-300 line-clamp-2"
+            className="mb-2 text-2xl font-bold text-white transition-colors duration-300 cursor-pointer hover:text-yellow-400 line-clamp-2"
           >
-            {blog.title}
+            {blog.title || "Untitled"}
           </h2>
           <div className="flex items-center text-sm text-gray-300">
-            <FaUser className="mr-2" />
-            <span>{blog.author}</span>
+            <FaUser className="mr-2 text-pink-500" />
+            <span>{blog.author || "Unknown Author"}</span>
           </div>
         </div>
       </div>
       <div className="p-6">
-        <p className="text-gray-300 mb-6 line-clamp-3">{blog.content}</p>
-        <div className="flex justify-between items-center text-sm text-gray-400 border-t border-gray-700 pt-4">
+        <p className="mb-6 text-gray-300 line-clamp-3">
+          {blog.content || "No content available."}
+        </p>
+        <div className="flex items-center justify-between pt-4 text-sm text-gray-400 border-t border-gray-700">
           <motion.div
-            className="flex items-center"
-            whileHover={{ scale: 1.1, color: "#f56565" }}
+            className="flex items-center cursor-pointer"
+            whileHover={{ scale: 1.1 }}
+            onClick={handleLike}
           >
-            <FaHeart className="mr-2" />
-            <span>{blog.likes}</span>
+            <FaHeart
+              className={`mr-2 ${isLiked ? "text-pink-500" : "text-gray-400"}`}
+            />
+            <span>{likeCount}</span>
           </motion.div>
           <motion.div
             className="flex items-center"
             whileHover={{ scale: 1.1, color: "#4299e1" }}
           >
-            <FaComment className="mr-2" />
-            <span>{blog.comments.length}</span>
+            <FaComment className="mr-2 text-blue-400" />
+            <span>{blog.comments?.length || 0}</span>
           </motion.div>
           <motion.div
             className="flex items-center"
             whileHover={{ scale: 1.1, color: "#48bb78" }}
           >
-            <FaClock className="mr-2" />
+            <FaClock className="mr-2 text-green-400" />
             <span>{format(new Date(blog.createdAt), "MMM d, yyyy")}</span>
           </motion.div>
         </div>
       </div>
       <motion.button
-        className="w-full bg-gradient-to-r from-pink-500 via-yellow-500 to-orange-500 text-gray-900 font-semibold py-3 text-center hover:from-orange-500 hover:via-yellow-400 hover:to-pink-500 transition-colors duration-300"
+        className="w-full py-3 font-semibold text-center text-white transition-colors duration: 300 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-purple-600 hover:to-pink-500"
         whileHover={{ y: -2 }}
         whileTap={{ y: 0 }}
         onClick={() => clickHandler(blog?._id)}
@@ -167,24 +206,20 @@ function BlogCard({ blog }) {
 
 function LoadingSpinner() {
   return (
-    <div className="flex justify-center items-center h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
-      <motion.div
-        className="w-16 h-16 border-4 border-white border-t-transparent rounded-full"
-        animate={{ rotate: 360 }}
-        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-      />
+    <div className="flex items-center justify-center w-full h-screen bg-gradient-to-br from-gray-900 to-black">
+      <ImSpinner9 className="text-6xl text-pink-500 animate-spin" />
     </div>
   );
 }
 
 function ErrorMessage({ message }) {
   return (
-    <div className="flex justify-center items-center h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
+    <div className="flex items-center justify-center h-screen bg-gradient-to-br from-gray-900 to-black">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
-        className="bg-red-100 border border-red-400 text-red-700 px-6 py-4 rounded-lg shadow-lg"
+        className="px-6 py-4 text-red-700 bg-red-100 border border-red-400 rounded-lg shadow-lg"
         role="alert"
       >
         <strong className="font-bold">Error: </strong>
