@@ -209,7 +209,7 @@ function AdminDashboard() {
       {/* Main Content */}
       <div
         className={`flex flex-col flex-1 ${
-          isLargeScreen && isSidebarOpen ? "lg:ml-56" : ""
+          isLargeScreen && isSidebarOpen ? "" : ""
         } transition-all duration-300`}
       >
         {/* Header */}
