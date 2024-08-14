@@ -109,7 +109,7 @@ function AdminDashboard() {
       <AnimatePresence>
         {isSidebarOpen && (
           <motion.div
-            className="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg bg-opacity-80 backdrop-filter backdrop-blur-lg lg:relative"
+            className="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg lg:relative"
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
@@ -214,7 +214,7 @@ function AdminDashboard() {
       >
         {/* Header */}
         <motion.div
-          className="sticky top-0 z-40 flex items-center justify-between p-4 bg-white shadow-md bg-opacity-80 backdrop-filter backdrop-blur-lg"
+          className="sticky top-0 z-40 flex items-center justify-between p-4 bg-white shadow-md"
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
