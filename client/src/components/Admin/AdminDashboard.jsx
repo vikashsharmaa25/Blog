@@ -115,12 +115,12 @@ function AdminDashboard() {
             exit={{ x: "-100%" }}
             transition={{ duration: 0.3 }}
           >
-            <div className="p-6">
-              <h1 className="mb-8 text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 lg:text-3xl">
+            <div className="p-0">
+              <h1 className="mb-8 p-6 text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 lg:text-3xl">
                 Admin Panel
               </h1>
               <nav>
-                <ul className="space-y-3">
+                <ul className="space-y-0">
                   {menuItems.map((item) => (
                     <motion.li
                       key={item.name}
@@ -128,7 +128,7 @@ function AdminDashboard() {
                       whileTap={{ scale: 0.95 }}
                     >
                       <button
-                        className={`w-full text-left py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-between ${
+                        className={`w-full text-left py-3 px-4 rounded-none transition-all duration-200 flex items-center justify-between ${
                           activeMenu === item.name
                             ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white"
                             : "hover:bg-gray-100"
@@ -164,7 +164,7 @@ function AdminDashboard() {
                           (item.name === "category" &&
                             isCategorySubmenuOpen) ? (
                             <motion.ul
-                              className="pl-6 mt-2 space-y-2"
+                              className="pl-6 mt-2 space-y-0"
                               initial={{ height: 0 }}
                               animate={{ height: "auto" }}
                               exit={{ height: 0 }}
@@ -173,7 +173,7 @@ function AdminDashboard() {
                               {item.submenu.map((subitem) => (
                                 <li key={subitem.name}>
                                   <button
-                                    className={`w-full text-left py-2 px-4 rounded-lg transition-all duration-200 flex items-center ${
+                                    className={`w-full text-left py-2 px-4 rounded-none transition-all duration-200 flex items-center ${
                                       activeMenu === subitem.name
                                         ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white"
                                         : "hover:bg-gray-100"
@@ -233,7 +233,7 @@ function AdminDashboard() {
 
         {/* Dashboard Content */}
         <motion.div
-          className="flex-1 p-4 overflow-auto lg:p-6"
+          className="flex-1 p-0 overflow-auto lg:p-0"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
