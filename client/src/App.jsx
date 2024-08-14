@@ -8,6 +8,7 @@ import { AdminRoute, PrivateRoute } from "./components/routes/PrivateRoute";
 import Dashboard from "./components/User/Dashboard";
 import AdminDashboard from "./components/Admin/AdminDashboard";
 import BlogById from "./components/Blogs/BlogById";
+import About from "./components/About/About";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/about" element={<About />} />
         <Route path="/register" element={<Resgiter />} />
         <Route path="/blog/:id" element={<BlogById />} />
 
