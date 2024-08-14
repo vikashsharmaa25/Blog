@@ -1,13 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FiMenu,
   FiX,
   FiHome,
-  FiPlus,
   FiUsers,
   FiSettings,
-  FiLogOut,
   FiChevronDown,
   FiChevronRight,
 } from "react-icons/fi";
@@ -21,10 +19,27 @@ import AllCategory from "./AllCategory";
 
 function AdminDashboard() {
   const [activeMenu, setActiveMenu] = useState("allBlog");
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [editBlogId, setEditBlogId] = useState(null);
   const [isBlogSubmenuOpen, setIsBlogSubmenuOpen] = useState(false);
   const [isCategorySubmenuOpen, setIsCategorySubmenuOpen] = useState(false);
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsLargeScreen(window.innerWidth >= 1024);
+      if (window.innerWidth >= 1024) {
+        setIsSidebarOpen(true);
+      } else {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -33,6 +48,9 @@ function AdminDashboard() {
   const handleMenuClick = (menu, id = null) => {
     setActiveMenu(menu);
     setEditBlogId(id);
+    if (!isLargeScreen) {
+      setIsSidebarOpen(false);
+    }
   };
 
   const toggleSubmenu = (submenu) => {
@@ -91,14 +109,14 @@ function AdminDashboard() {
       <AnimatePresence>
         {isSidebarOpen && (
           <motion.div
-            className="w-64 bg-white shadow-lg bg-opacity-80 backdrop-filter backdrop-blur-lg"
-            initial={{ x: -250 }}
+            className="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg bg-opacity-80 backdrop-filter backdrop-blur-lg lg:relative"
+            initial={{ x: "-100%" }}
             animate={{ x: 0 }}
-            exit={{ x: -250 }}
+            exit={{ x: "-100%" }}
             transition={{ duration: 0.3 }}
           >
             <div className="p-6">
-              <h1 className="mb-8 text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
+              <h1 className="mb-8 text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 lg:text-3xl">
                 Admin Panel
               </h1>
               <nav>
@@ -177,15 +195,26 @@ function AdminDashboard() {
                 </ul>
               </nav>
             </div>
+            {/* Close button for mobile */}
+            <button
+              onClick={toggleSidebar}
+              className="absolute top-4 right-4 text-2xl text-gray-600 lg:hidden"
+            >
+              <FiX />
+            </button>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Main Content */}
-      <div className="flex flex-col flex-1">
+      <div
+        className={`flex flex-col flex-1 ${
+          isLargeScreen && isSidebarOpen ? "lg:ml-64" : ""
+        } transition-all duration-300`}
+      >
         {/* Header */}
         <motion.div
-          className="flex items-center justify-between p-4 bg-white shadow-md bg-opacity-80 backdrop-filter backdrop-blur-lg"
+          className="sticky top-0 z-40 flex items-center justify-between p-4 bg-white shadow-md bg-opacity-80 backdrop-filter backdrop-blur-lg"
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
@@ -196,14 +225,15 @@ function AdminDashboard() {
           >
             {isSidebarOpen ? <FiX /> : <FiMenu />}
           </button>
-          <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
+          <h1 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 lg:text-2xl">
             Admin Dashboard
           </h1>
+          <div className="w-8"></div>
         </motion.div>
 
         {/* Dashboard Content */}
         <motion.div
-          className="flex-1 p-6 overflow-auto"
+          className="flex-1 p-4 overflow-auto lg:p-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}

@@ -51,7 +51,7 @@ const Navbar = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              Logo
+              Blog
             </motion.span>
           </NavLink>
           <div className="hidden md:flex space-x-6">
