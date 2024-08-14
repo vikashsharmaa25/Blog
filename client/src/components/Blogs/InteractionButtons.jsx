@@ -14,9 +14,9 @@ function InteractionButtons({ onCommentClick }) {
         >
           <FaComment /> <span>Comment</span>
         </button>
-        <button className="flex items-center space-x-2 transition-colors hover:text-green-500">
+        {/* <button className="flex items-center space-x-2 transition-colors hover:text-green-500">
           <FaShare /> <span>Share</span>
-        </button>
+        </button> */}
       </div>
     </div>
   );
