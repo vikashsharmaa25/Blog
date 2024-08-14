@@ -109,13 +109,13 @@ function AdminDashboard() {
       <AnimatePresence>
         {isSidebarOpen && (
           <motion.div
-            className="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg lg:relative"
+            className="fixed inset-y-0 left-0 z-50 w-56 bg-white shadow-lg lg:relative"
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ duration: 0.3 }}
           >
-            <div className="p-0">
+            <div className="py-2">
               <h1 className="mb-8 p-6 text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 lg:text-3xl">
                 Admin Panel
               </h1>
@@ -209,12 +209,12 @@ function AdminDashboard() {
       {/* Main Content */}
       <div
         className={`flex flex-col flex-1 ${
-          isLargeScreen && isSidebarOpen ? "lg:ml-64" : ""
+          isLargeScreen && isSidebarOpen ? "lg:ml-56" : ""
         } transition-all duration-300`}
       >
         {/* Header */}
         <motion.div
-          className="sticky top-0 z-40 flex items-center justify-between p-4 bg-white shadow-md"
+          className="sticky top-0 z-40 flex items-center justify-between px-4 py-2 bg-white shadow-md"
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
@@ -233,7 +233,7 @@ function AdminDashboard() {
 
         {/* Dashboard Content */}
         <motion.div
-          className="flex-1 p-0 overflow-auto lg:p-0"
+          className="flex-1 overflow-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
