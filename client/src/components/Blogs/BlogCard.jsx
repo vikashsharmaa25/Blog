@@ -4,6 +4,7 @@ import { FaHeart, FaComment, FaClock, FaUser } from "react-icons/fa";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { message } from "antd"; // Ant Design ka message component
 
 function BlogCard({ blog, user }) {
   const navigate = useNavigate();
@@ -17,6 +18,11 @@ function BlogCard({ blog, user }) {
   };
 
   const handleLike = async () => {
+    if (!user) {
+      message.error("Please login to like the blog.");
+      return;
+    }
+
     try {
       const response = await axios.post("/api/blog/like", { blogId: blog._id });
       setLikeCount((prevCount) => (isLiked ? prevCount - 1 : prevCount + 1));
@@ -24,6 +30,7 @@ function BlogCard({ blog, user }) {
       console.log("response", response);
     } catch (error) {
       console.error("Error liking the blog:", error);
+      message.error("Failed to like the blog.");
     }
   };
 
